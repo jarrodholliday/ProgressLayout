@@ -1,5 +1,15 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.3.4' // 0.3.5 currently broken
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
+apply plugin: 'bintray-release'
 
 android {
 
@@ -9,8 +19,6 @@ android {
   defaultConfig {
     minSdkVersion Integer.parseInt(project.ANDROID_MIN_SDK)
     targetSdkVersion Integer.parseInt(project.ANDROID_TARGET_SDK_VERSION)
-    versionCode 1
-    versionName "1.0"
   }
 
   sourceSets {
@@ -35,10 +43,19 @@ android {
     exclude 'META-INF/services/javax.annotation.processing.Processor'
   }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
   lintOptions {
     abortOnError false
   }
 
+}
+
+dependencies {
+    compile 'com.android.support:support-annotations:23.2.1'
 }
 
 task checkstyle(type: Checkstyle) {
@@ -47,4 +64,21 @@ task checkstyle(type: Checkstyle) {
   include '**/*.java'
   exclude '**/gen/**'
   classpath = files()
+}
+
+publish {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    def user = properties.getProperty('bintrayUser')
+    def key = properties.getProperty('bintrayKey')
+    userOrg = 'jarrodholliday'
+    groupId = 'com.github.jarrodholliday'
+    artifactId = 'progresslayout'
+    uploadName = 'ProgressLayout'
+    publishVersion = '1.0.0'
+    description = 'fork of https://github.com/iammert/ProgressLayout'
+    website = 'https://github.com/jarrodholliday/ProgressLayout'
+    bintrayUser = user
+    bintrayKey = key
+    dryRun = false
 }
